@@ -4,12 +4,12 @@ const keys = require('./keys');
 const User = require('../models/user-model');
 
 passport.serializeUser((user, done) =>{
-    done(null, user.id);
+    done(null, user);
 });
 
 passport.deserializeUser((id, done) =>{
     User.findById(id).then((user) =>{
-        done(null, user.id);
+        done(null, user);
     })
 });
 
@@ -23,14 +23,12 @@ passport.use(
     }, (accessToken, refreshToken, profile, done) =>{
        User.findOne({googleid : profile.id}).then((currentUser) =>{
             if(currentUser){
-                console.log('User is: ' + currentUser);
                 done(null, currentUser)
             }else{
                 new User({
                     username: profile.displayName,
                     googleid: profile.id
                 }).save().then((newUser) =>{
-                    console.log('new User created: ' + newUser);
                     done(null, newUser);
                 })
             }
